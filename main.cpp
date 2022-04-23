@@ -2,7 +2,7 @@
 
 int main() {
     //Creating list of students
-    struct Student *listHead = createListOfStudents("D:\\Work\\University\\C1S2"
+    struct Student *pListHead = createListOfStudents("D:\\Work\\University\\C1S2"
                                           "\\Introduction to Software Engineering\\Lab02\\students.txt");
 
     //Variable for storing chosen operation
@@ -24,15 +24,15 @@ int main() {
       std::cin >> operation;
 
       if(operation == 'p' || operation == 'P') {
-        printStudents(listHead);
+        printStudents(pListHead);
         } else if(operation == 's' || operation == 'S') {
-        sortStudents(&listHead);
+        sortStudents(&pListHead);
         } else if(operation == 'a' || operation == 'A') {
-        addNewStudent(&listHead);
+        addNewStudent(&pListHead);
         } else if(operation == 'd' || operation == 'D') {
-        deleteTheLowest(&listHead, 3);
+        deleteTheLowest(&pListHead, 3);
         } else if(operation == 'l' || operation == 'L') {
-        printLowerAvg(listHead);
+        printLowerAvg(pListHead);
         } else if(operation == 'x' || operation == 'X') {
         break;
         } else {

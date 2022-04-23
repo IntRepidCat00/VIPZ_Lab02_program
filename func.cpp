@@ -372,34 +372,56 @@ void deleteTheLowest(struct Student **ppListHead, int nNumToDelete) {
 
   pPtr = *ppListHead;
 
+  int nGradesToSkip[nNumToDelete];
+
+  for(int i{0}; i < nNumToDelete; i++)
+  {
+    nGradesToSkip[i] = -1;
+  }
 
   int nIter {0};
   struct Student *pPrevious = pPtr;
   // Cycle that deletes students with the lowest grades stored in dLowestGrades
-  while(pPtr != nullptr || nIter < nNumToDelete) {
+  while(pPtr != nullptr && nIter < nNumToDelete) {
     dCurAvgGrade = pPtr->m_nGrades[0];
     for(int i = 1; i < 5; i++) {
       dCurAvgGrade += pPtr->m_nGrades[i];
     }
     dCurAvgGrade /= 5;
 
-    for(int i = nIter; i < nNumToDelete; i++) {
+    for(int i = 0; i < nNumToDelete; i++) {
+      bool bSkip{false};
+      for(int j{0}; j < nNumToDelete; j++) {
+        if(i == nGradesToSkip[j])
+        {
+          bSkip = true;
+        }
+      }
+      if(bSkip){
+        continue;
+      }
       if (dCurAvgGrade == dLowestGrades[i]) {
         if (pPtr == *ppListHead) {
           *ppListHead = pPtr->m_pNext;
           delete pPtr;
           pPtr = *ppListHead;
+          nGradesToSkip[nIter] = i;
           nIter++;
+          break;
         } else if (pPtr->m_pNext == nullptr) {
           pPrevious->m_pNext = nullptr;
           delete pPtr;
           pPtr = pPrevious;
+          nGradesToSkip[nIter] = i;
           nIter++;
+          break;
         } else {
           pPrevious->m_pNext = pPtr->m_pNext;
           delete pPtr;
           pPtr = pPrevious;
+          nGradesToSkip[nIter] = i;
           nIter++;
+          break;
         }
       }
     }
