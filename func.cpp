@@ -26,6 +26,10 @@ struct Student *createListOfStudents(std::string sFilePath) {
   struct Student *pHead = nullptr;
   struct Student *pPrevious = nullptr;
   while(!fFile.eof()) {
+    if(isspace(fFile.peek()))
+    {
+      break;
+    }
     struct Student *pNewElement = new struct Student;
     pNewElement->m_pNext = nullptr;
     if(pPrevious != nullptr) {
@@ -36,22 +40,90 @@ struct Student *createListOfStudents(std::string sFilePath) {
     }
     pPrevious = pNewElement;
 
+    if(!std::isalpha(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> pNewElement->m_sSurname;
+    fFile.ignore();
+    if(!std::isalpha(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> pNewElement->m_sName;
     int nDay, nMonth, nYear;
+    fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> nDay ;
     fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> nMonth;
     fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> nYear;
     pNewElement->m_birthday.tm_mday = nDay;
     pNewElement->m_birthday.tm_mon = nMonth-1;
     pNewElement->m_birthday.tm_year = nYear-1900;
+    fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> pNewElement->m_nGrades[0];
+    fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> pNewElement->m_nGrades[1];
+    fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> pNewElement->m_nGrades[2];
+    fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> pNewElement->m_nGrades[3];
+    fFile.ignore();
+    if(!std::isdigit(fFile.peek()))
+    {
+      std::cout << "~~~~~ WRONG DATA ~~~~~" << std::endl;
+      pHead = nullptr;
+      break;
+    }
     fFile >> pNewElement->m_nGrades[4];
+    fFile.ignore();
     }
   return pHead;
 }
@@ -195,7 +267,7 @@ void printLowerAvg(struct Student *pListHead) {
   }
   int nSize{0};
   struct Student *pPtr {pListHead};
-  while(pPtr->m_pNext != nullptr) {
+  while(pPtr != nullptr) {
     nSize++;
     pPtr=pPtr->m_pNext;
   }
@@ -246,14 +318,14 @@ void printLowerAvg(struct Student *pListHead) {
   std::cout << std::endl << sDivideLine << std::endl;
   std::cout << "| Name " << sNameSpace << " | Birthdate  "
       "| Grades    |" << std::endl;
-  while(pPtr->m_pNext != nullptr) {
+  while(pPtr != nullptr) {
     double curAvg {0};
     for(int i = 0; i < 5; i++) {
       curAvg += pPtr->m_nGrades[i];
     }
     curAvg /= 5;
 
-    if(curAvg <  dGlobalAvg) {
+    if(curAvg <=  dGlobalAvg) {
       char buffer[11];
       std::strftime(buffer, 11, "%d.%m.%Y", &(pPtr->m_birthday));
       int spaceSize = nSpacing - pPtr->m_sSurname.length() - pPtr->m_sName.length();
@@ -415,17 +487,24 @@ void deleteTheLowest(struct Student **ppListHead, int nNumToDelete) {
           nGradesToSkip[nIter] = i;
           nIter++;
           break;
-        } else {
-          pPrevious->m_pNext = pPtr->m_pNext;
-          delete pPtr;
-          pPtr = pPrevious;
-          nGradesToSkip[nIter] = i;
-          nIter++;
+        } else if(pPtr == *ppListHead && pPtr->m_pNext == nullptr) {
+          *ppListHead = nullptr;
+          pPtr = nullptr;
           break;
+        } else {
+            pPrevious->m_pNext = pPtr->m_pNext;
+            delete pPtr;
+            pPtr = pPrevious;
+            nGradesToSkip[nIter] = i;
+            nIter++;
+            break;
+          }
         }
       }
     }
     pPrevious = pPtr;
-    pPtr = pPtr->m_pNext;
+    if(pPtr != nullptr)
+    {
+      pPtr = pPtr->m_pNext;
+    }
   }
-}
